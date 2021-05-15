@@ -6,32 +6,20 @@ import debounceFn from 'debounce-fn'
 import {FaRegCalendarAlt} from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
 import {useParams} from 'react-router-dom'
-import {useQuery, useMutation, queryCache} from 'react-query'
-import {client} from 'utils/api-client'
 import {formatDate} from 'utils/misc'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
 import {Textarea} from 'components/lib'
 import {Rating} from 'components/rating'
 import {StatusButtons} from 'components/status-buttons'
-import bookPlaceholderSvg from 'assets/book-placeholder.svg'
-
-const loadingBook = {
-  title: 'Loading...',
-  author: 'loading...',
-  coverImageUrl: bookPlaceholderSvg,
-  publisher: 'Loading Publishing',
-  synopsis: 'Loading...',
-  loadingBook: true,
-}
+import { useBook } from 'utils/books.exercise'
+import { useListItem, useUpdateListItem } from 'utils/list-items.exercise'
 
 function BookScreen({user}) {
   const {bookId} = useParams()
-  const {data: book = loadingBook} = useQuery(['book', {bookId}], () => client(`books/${bookId}`, {token: user.token}).then(data => data.book) )
-  const {data} = useQuery('list-items', () => client(`list-items`, {token: user.token}))
-  const {listItems} = data || {};
-  const listItem = listItems?.find(li => li.bookId === book.id) ?? null;
-  const {title, author, coverImageUrl, publisher, synopsis} = book
+  const book = useBook(bookId, user);
+  const listItem = useListItem(bookId, user)
+  const {title, author, coverImageUrl, publisher, synopsis} = book;
 
   return (
     <div>
@@ -113,10 +101,7 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [update] = useMutation(
-    (updates) => client(`list-items/${updates.id}`, { token: user.token, data: updates, method: 'PUT'}),
-    {onSettled: () => queryCache.invalidateQueries('list-items')},
-  )
+  const [update] = useUpdateListItem(user);
 
   const debouncedMutate = React.useMemo(() => debounceFn(update, {wait: 300}), [
     update,
