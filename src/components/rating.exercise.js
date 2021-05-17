@@ -6,6 +6,7 @@ import {FaStar} from 'react-icons/fa'
 import { queryCache, useMutation } from 'react-query'
 import * as colors from 'styles/colors'
 import { client } from 'utils/api-client.exercise'
+import { ErrorMessage } from './lib'
 
 const visuallyHiddenCSS = {
   border: '0',
@@ -20,7 +21,7 @@ const visuallyHiddenCSS = {
 
 function Rating({listItem, user}) {
   const [isTabbing, setIsTabbing] = React.useState(false)
-  const [update] = useMutation((updates) => client(`list-items/${updates.id}`, {data: updates, token: user.token, method: 'PUT'}),
+  const [update, {error, isError}] = useMutation((updates) => client(`list-items/${updates.id}`, {data: updates, token: user.token, method: 'PUT'}),
    {onSettled: ()=> queryCache.invalidateQueries('list-items')})
 
   React.useEffect(() => {
@@ -85,6 +86,12 @@ function Rating({listItem, user}) {
           </span>
           <FaStar css={{width: '16px', margin: '0 2px'}} />
         </label>
+        {isError ? (
+    <ErrorMessage
+      error={error}
+      variant="inline"
+      css={{marginLeft: 6, fontSize: '0.7em'}}
+    />) : null}
       </React.Fragment>
     )
   })

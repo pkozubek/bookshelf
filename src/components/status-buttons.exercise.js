@@ -16,10 +16,13 @@ import {CircleButton, Spinner} from './lib'
 import { useListItem, useUpdateListItem, useCreateListItem, useRemoveListItem } from 'utils/list-items.exercise';
 
 function TooltipButton({label, highlight, onClick, icon, ...rest}) {
-  const {isLoading, isError, error, run} = useAsync()
+  const {isLoading, isError, error, run, reset} = useAsync()
 
   function handleClick() {
-    run(onClick())
+    if(isError) reset()
+    else {
+      run(onClick())
+    }
   }
 
   return (
@@ -48,9 +51,9 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 
 function StatusButtons({user, book}) {
   const listItem = useListItem(book.id, user)
-  const [update] = useUpdateListItem(user);
-  const [create] = useCreateListItem(user);
-  const [remove] = useRemoveListItem(user)
+  const [update] = useUpdateListItem(user, {throwOnError: true});
+  const [create] = useCreateListItem(user, {throwOnError: true});
+  const [remove] = useRemoveListItem(user, {throwOnError: true})
 
   return (
     <React.Fragment>
