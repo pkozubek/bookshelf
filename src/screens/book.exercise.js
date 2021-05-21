@@ -16,12 +16,12 @@ import {Rating} from 'components/rating'
 import {StatusButtons} from 'components/status-buttons'
 
 // 💣 remove the user prop
-function BookScreen({user}) {
+function BookScreen() {
   const {bookId} = useParams()
   // 💣 remove the user argument
-  const book = useBook(bookId, user)
+  const book = useBook(bookId)
   // 💣 remove the user argument
-  const listItem = useListItem(bookId, user)
+  const listItem = useListItem(bookId)
 
   const {title, author, coverImageUrl, publisher, synopsis} = book
 
@@ -66,8 +66,6 @@ function BookScreen({user}) {
             >
               {book.loadingBook ? null : (
                 <StatusButtons
-                  // 💣 remove the user prop here
-                  user={user}
                   book={book}
                 />
               )}
@@ -76,8 +74,6 @@ function BookScreen({user}) {
           <div css={{marginTop: 10, height: 46}}>
             {listItem?.finishDate ? (
               <Rating
-                // 💣 remove the user prop here
-                user={user}
                 listItem={listItem}
               />
             ) : null}
@@ -89,8 +85,6 @@ function BookScreen({user}) {
       </div>
       {!book.loadingBook && listItem ? (
         <NotesTextarea
-          // 💣 remove the user prop here
-          user={user}
           listItem={listItem}
         />
       ) : null}
